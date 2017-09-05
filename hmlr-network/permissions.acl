@@ -1,0 +1,363 @@
+/**
+ * New access control file
+ */
+ rule AllAccess {
+     description: "AllAccess - grant everything to everybody."
+     participant: "org.hyperledger.composer.system.Participant" 
+     operation: ALL
+     resource: "org.hyperledger.composer.system.**"
+     action: ALLOW
+ }
+
+/**
+ * Representative rules
+ */
+
+//Create contract - call made from API
+
+//  rule RepresentativesCanAccessProperties {
+//      description: "Allow representatives to create a contract"
+//      participant: "org.hmlr.model.Representative" 
+//      operation: READ
+//      resource: "org.hmlr.model.Property"
+//      action: ALLOW
+//  }
+
+ rule RepresentativesCanCreatePropertyExchanges {
+     description: "Allow representatives to create a contract"
+     participant: "org.hmlr.model.Seller" 
+     operation: CREATE
+     resource: "org.hmlr.model.PropertyExchange"
+     action: ALLOW
+ }
+
+ rule RepresentativesCanAccessPropertyExchanges {
+     description: "Allow representatives to access their contracts"
+     participant(m): "org.hmlr.model.Seller" 
+     operation: ALL
+     resource(v): "org.hmlr.model.PropertyExchange"
+   	 condition: (v.contract.seller.find(function(x){return x.saleParticipantId === m.getIdentifier()}))
+     action: ALLOW
+ }
+
+ rule RepresentativesCanCreateContracts {
+     description: "Allow representatives to create a contract"
+     participant: "org.hmlr.model.Seller" 
+     operation: CREATE
+     resource: "org.hmlr.model.Seller"
+     action: ALLOW
+ }
+
+//  rule RepresentativesCanAccessContracts {
+//      description: "Allow representatives to access their contracts"
+//      participant(m): "org.hmlr.model.Seller" 
+//      operation: ALL
+//      resource(v): "org.hmlr.model.Seller"
+//    	 condition: (v.seller.getIdentifier() == m.getIdentifier())
+//      action: ALLOW
+//  }
+
+ rule RepresentativesCanUpdateContracts {
+     description: "Allow representatives to access their contracts"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.UpdateContract"
+     action: ALLOW
+ }
+
+  rule RepresentativesCanSeeAllBuyers {
+     description: "Allow representatives to see all buyers to add them to a contract"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.Buyer"
+     action: ALLOW
+ }
+
+  rule RepresentativesCanSeeAllSellers {
+     description: "Allow representatives to see all sellers to add them to a contract"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.Seller"
+     action: ALLOW
+ }
+
+
+
+/**
+ * Buyer rules
+ */
+
+ rule BuyerCanAccessContract {
+     description: "Allow buyer to access their contract"
+     participant(m): "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource(v): "org.hmlr.model.Contract"
+   	 condition: ( v.buyer.find(function(x){return x.saleParticipantId === m.getIdentifier()}) )
+     action: ALLOW
+ }
+
+ rule BuyerCanApproveContract {
+     description: "Allow buyer to sign their contract"
+     participant: "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource: "org.hmlr.model.ApproveContract"
+     action: ALLOW
+ }
+
+ rule BuyerCanUpdateCompletionDate {
+     description: "Allow buyer to update completion date"
+     participant: "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource: "org.hmlr.model.UpdateContractCompletionDate"
+     action: ALLOW
+ }
+
+ rule BuyerCanConfirmDepositPayment {
+     description: "Allow buyer to confirm deposit payment"
+     participant: "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource: "org.hmlr.model.ConfirmDepositPayment"
+     action: ALLOW
+ }
+
+ rule BuyerCanConfirmAdditionalFundsPayment {
+     description: "Allow buyer to confirm additional funds payment"
+     participant: "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource: "org.hmlr.model.ConfirmAdditionalFundsPayment"
+     action: ALLOW
+ }
+
+ rule BuyerCanCreateAdditionalFundsReceipt {
+     description: "Allow buyer to confirm additional funds payment"
+     participant(p): "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource(r): "org.hmlr.model.AdditionalFundsReceipt"
+     condition: (p.getIdentifier() === r.buyer.getIdentifier())
+     action: ALLOW
+ }
+
+rule BuyerCanUpdatePropExchangeWithAdditionalFundsReceipt {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Buyer" 
+     operation: UPDATE
+     resource: "org.hmlr.model.PropertyExchange"
+     transaction: "org.hmlr.model.ConfirmAdditionalFundsPayment"
+     action: ALLOW
+}
+
+  rule BuyerCanCreateDepositReceipts {
+     description: "Allow buyer to create deposit payment receipts"
+     participant(p): "org.hmlr.model.Buyer" 
+     operation: ALL
+     resource(r): "org.hmlr.model.DepositReceipt"
+     condition: (p.getIdentifier() === r.buyer.getIdentifier())
+     action: ALLOW
+ }
+
+rule BuyerCanUpdatePropertyExchanges {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Buyer" 
+     operation: UPDATE
+     resource: "org.hmlr.model.PropertyExchange"
+     transaction: "org.hmlr.model.ConfirmDepositPayment"
+     action: ALLOW
+}
+
+rule BuyerCanSeePropertyExchanges {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Buyer" 
+     operation: READ
+     resource: "org.hmlr.model.PropertyExchange"
+     action: ALLOW
+}
+
+
+
+/**
+ * Seller rules
+ */
+
+ rule SellerCanAccessContract {
+     description: "Allow seller to access their contract"
+     participant(m): "org.hmlr.model.Seller" 
+     operation: ALL
+     resource(v): "org.hmlr.model.Contract"
+   	 condition: ( v.seller.find(function(x){return x.saleParticipantId === m.getIdentifier()}) )
+     action: ALLOW
+ }
+
+ rule SellerCanApproveContract {
+     description: "Allow seller to sign their contract"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.ApproveContract"
+     action: ALLOW
+ }
+
+ rule SellerCanUpdateCompletionDate {
+     description: "Allow seller to update completion date"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.UpdateContractCompletionDate"
+     action: ALLOW
+ }
+
+  rule SellerCanAccessProperty {
+     description: "Allow seller to access their property"
+     participant(m): "org.hmlr.model.Seller" 
+     operation: ALL
+     resource(v): "org.hmlr.model.Property"
+   	 condition: ( v.owners.find(function(x){return x.saleParticipantId === m.getIdentifier()}) )
+     action: ALLOW
+ }
+ 
+
+rule SellerCanLockProperty {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Seller" 
+     operation: ALL
+     resource: "org.hmlr.model.LockProperty"
+     transaction: "org.hmlr.model.LockProperty"
+     action: ALLOW
+}
+
+/**
+ * Lender rules
+ */
+
+ rule LenderCanConfirmMortgagePayment {
+     description: "Allow lender to confirm mortgage payment"
+     participant: "org.hmlr.model.Lender" 
+     operation: ALL
+     resource: "org.hmlr.model.ConfirmMortgagePayment"
+     action: ALLOW
+ }
+
+  rule LenderCanCreateMortgageReceipts {
+     description: "Allow lender to confirm mortgage payment"
+     participant: "org.hmlr.model.Lender" 
+     operation: CREATE
+     resource: "org.hmlr.model.MortgageReceipt"
+     action: ALLOW
+ }
+
+ rule LenderCanReadMortgageReceiptsOwnedByThem {
+     description: "Allow lender to confirm mortgage payment"
+     participant(p): "org.hmlr.model.Lender" 
+     operation: ALL
+     resource(r): "org.hmlr.model.MortgageReceipt"
+   	 condition: (p.getIdentifier() === r.lender.getIdentifier())
+     action: ALLOW
+ }
+
+rule LenderCanUpdatePropertyExchanges {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Lender" 
+     operation: UPDATE
+     resource: "org.hmlr.model.PropertyExchange"
+     transaction: "org.hmlr.model.ConfirmMortgagePayment"
+     action: ALLOW
+}
+
+rule LenderCanSeePropertyExchanges {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Lender" 
+     operation: READ
+     resource: "org.hmlr.model.PropertyExchange"
+     action: ALLOW
+}
+
+
+/**
+ * Escrow rules
+ */
+ 
+  rule EscrowCanReadAllPropertyExchanges {
+     description: "Allow escrow to read all property exchanges"
+     participant: "org.hmlr.model.Escrow" 
+     operation: READ
+     resource: "org.hmlr.model.PropertyExchange"
+     action: ALLOW
+}
+
+ rule EscrowCanAccessAllContracts {
+     description: "Allow escrow to access all contracts"
+     participant: "org.hmlr.model.Escrow" 
+     operation: ALL
+     resource: "org.hmlr.model.Contract"
+     action: ALLOW
+ }
+
+//Todo - Doesn't work correctly
+ rule EscrowCanAccessAccountsOwnedByThem {
+     description: "Allow escrow to access all of their accounts"
+     participant(m): "org.hmlr.model.Escrow" 
+     operation: ALL
+     resource(v): "org.hmlr.model.EscrowShadowAccount"
+     condition: (v.owner == m.getFullyQualifiedIdentifier())
+     action: ALLOW
+ }
+
+ rule EscrowCanConfirmAdditionalFundsPayment {
+     description: "Allow escrow to confirm funds payout"
+     participant: "org.hmlr.model.Escrow" 
+     operation: ALL
+     resource: "org.hmlr.model.ConfirmEscrowPayoutReceipt"
+     action: ALLOW
+ }
+
+  rule EscrowCanCreateReceipts {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Escrow" 
+     operation: ALL
+     resource: "org.hmlr.model.EscrowPayoutReceipt"
+     action: ALLOW
+ }
+
+ rule EscrowCanUpdatePropExch {
+     description: "Allow buyer to create deposit payment receipts"
+     participant: "org.hmlr.model.Escrow" 
+     operation: UPDATE, READ
+     resource: "org.hmlr.model.PropertyExchange"
+     transaction: "org.hmlr.model.ConfirmEscrowPayoutReceipt"
+     action: ALLOW
+}
+
+
+/**
+ * HMLR rules
+ */
+
+ rule HMLRCanAccessAllContracts {
+     description: "Allow HMLR to access all contracts"
+     participant: "org.hmlr.model.HMLR" 
+     operation: ALL
+     resource: "org.hmlr.model.Contract"
+     action: ALLOW
+ }
+
+  rule HMLRCanAccessAllPropertyExchanges {
+     description: "Allow HMLR to access all property exchanges"
+     participant: "org.hmlr.model.HMLR" 
+     operation: ALL
+     resource: "org.hmlr.model.PropertyExchange"
+     action: ALLOW
+ }
+
+   rule HMLRCanAccessAllPropertiesxchanges {
+     description: "Allow HMLR to access all properties"
+     participant: "org.hmlr.model.HMLR" 
+     operation: ALL
+     resource: "org.hmlr.model.Property"
+     action: ALLOW
+ }
+
+    rule HMLRCanCallUpdatePropertyExchangeTransaction {
+     description: "Allow HMLR to call UpdatePropertyExchange"
+     participant: "org.hmlr.model.HMLR" 
+     operation: ALL
+     resource: "org.hmlr.model.UpdatePropertyExchange"
+     transaction: "org.hmlr.model.UpdatePropertyExchange"
+     action: ALLOW
+ }

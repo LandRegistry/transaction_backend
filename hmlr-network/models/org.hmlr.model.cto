@@ -1,0 +1,218 @@
+/**
+ * New model file
+ */
+
+namespace org.hmlr.model
+
+/**
+ * Enums and Concepts
+*/
+
+enum ContractStatus {
+  o DRAFTED
+  o COMPLETION_DATE_CONFIRMED
+  o FINALISED
+}
+
+enum PropertyExchangeStatus {
+  o PRE_EXCHANGE
+  o EXCHANGED
+  o COMPLETED
+}
+
+enum PropertyStatus {
+  o OWNED
+  o UP_FOR_SALE
+  o IN_PROCESS_OF_EXCHANGE
+}
+
+// enum MortgageStatus {
+//   o APPLICATION_SUBMITTED
+//   o APPROVED
+//   o REJECTED
+//   o ACTIVE
+//   o SETTLEDSETTLED
+// }
+
+/**
+ * Partcipants
+ */
+
+// participant Representative identified by representativeId {
+// 	o String representativeId
+//   o String name
+//   o String address
+// }
+
+abstract participant SaleParticipant identified by saleParticipantId {
+	o String saleParticipantId
+  o String title
+  o String saleParticipantFirstName
+  o String saleParticipantLastName
+}
+
+participant Buyer extends SaleParticipant {
+}
+
+participant Seller extends SaleParticipant {
+}
+
+participant Escrow identified by escrowId {
+  o String escrowId
+  o String name
+  o String address
+}
+
+participant Lender identified by lenderId {
+  o String lenderId
+  o String name
+  o String address
+}
+
+participant HMRC identified by hmrcId {
+  o String hmrcId
+}
+
+participant HMLR identified by hmlrId {
+  o String hmlrId
+}
+
+/**
+ * Assets
+*/
+
+//This is the 'main' asset. It acts as a 'folder' for all other assets
+asset PropertyExchange identified by propertyExchangeId {
+  o String propertyExchangeId
+
+  // Contract
+  --> Contract contract optional
+  //Place where the money needs to go from buyer and buyer lender/to seller, seller lender and HMRC
+  --> EscrowShadowAccount account optional
+
+  //Receipts
+  --> DepositReceipt depositReceipt optional
+  --> MortgageReceipt mortgageReceipt optional
+  --> AdditionalFundsReceipt additionalFundsReceipt optional
+  --> EscrowPayoutReceipt escrowPayoutReceipt optional
+
+  //Allow land reg to conf
+  o Boolean landRegUpdated default=false
+
+  // Property Exchange status
+  o PropertyExchangeStatus status
+}
+
+asset Contract identified by contractId {
+  o String contractId
+  --> Property property
+  --> Buyer[] buyer
+  --> Seller[] seller
+  //--> Representative representative
+  o Double agreedSalePriceInGBP
+
+  //Additional funds will be made up of stampDuty and fees
+  o Double stampDuty
+  o Double representativeFees
+
+  o String[] agreed optional
+  o String contractTerms optional
+
+    // Completion Information
+  o DateTime completionDate optional
+  o ContractStatus status
+}
+
+asset Property identified by propertyId {
+  o String propertyId
+  o String address
+  o Double propertyValueInGBP
+  --> SaleParticipant[] owners
+  o String additionalInformation optional
+  o PropertyStatus status
+}
+
+abstract asset PaymentReceipt identified by paymentReceiptId {
+  o String paymentReceiptId
+  o Double ammountInGBP
+}
+
+asset DepositReceipt extends PaymentReceipt {
+  --> Buyer buyer
+}
+
+asset MortgageReceipt extends PaymentReceipt {
+  --> Lender lender
+}
+
+asset AdditionalFundsReceipt extends PaymentReceipt {
+  --> Buyer buyer
+}
+
+asset EscrowPayoutReceipt extends PaymentReceipt {
+  o Double sellerAmmountInGBP
+  o Double sellerLenderAmmountInGBP optional
+  o Double sellerHMRCAmmountInGBP optional
+  //--> HMRC hmrc
+}
+
+asset EscrowShadowAccount identified by escrowShadowAccountId {
+  o String escrowShadowAccountId
+  --> Escrow owner
+}
+
+/**
+ * Transactions
+*/
+
+//called by the buyer’s representative
+transaction UpdateContract {
+  o String contractToUpdateId
+  o Double agreedSalePriceInGBP optional
+  o Integer stampDuty optional
+  o Integer representativeFees optional
+  o String contractTerms optional
+}
+
+//
+transaction UpdateContractCompletionDate {
+  o String contractId
+  o DateTime completionDate
+}
+
+transaction ApproveContract {
+  o String contractToUpdateId
+}
+
+//??
+transaction UpdatePropertyExchange {
+  o String propertyExchangeId
+}
+
+/**
+ * Payment confirmation transactions
+ */
+
+abstract transaction ConfirmPayment {
+  o String propertyExchangeId
+}
+
+transaction ConfirmDepositPayment extends ConfirmPayment {
+  o String depositReceiptId
+}
+
+transaction ConfirmMortgagePayment extends ConfirmPayment {
+  o String mortgageReceiptId
+}
+
+transaction ConfirmAdditionalFundsPayment extends ConfirmPayment {
+  o String additionalFundsReceiptId
+}
+
+transaction ConfirmEscrowPayoutReceipt extends ConfirmPayment {
+  o String escrowPayoutReceiptId
+}
+
+transaction LockProperty {
+  o String propertyId
+}
