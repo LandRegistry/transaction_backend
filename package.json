@@ -6,10 +6,10 @@
   "devDependencies": {
     "browserfs": "^1.2.0",
     "chai": "^3.5.0",
-    "composer-admin": "latest",
-    "composer-cli": "latest",
-    "composer-client": "latest",
-    "composer-connector-embedded": "latest",
+    "composer-admin": "0.13.1",
+    "composer-cli": "0.13.1",
+    "composer-client": "0.13.1",
+    "composer-connector-embedded": "0.13.1",
     "eslint": "^3.6.1",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.1",
@@ -25,18 +25,16 @@
   },
   "scripts": {
     "start": "node app.js",
-    "deploy": "./scripts/deploy.sh",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "lint": "eslint .",
     "postlicchk": "npm run doc",
     "postlint": "npm run licchk",
-    "prepublish": "mkdirp ./dist && composer archive create  --sourceType dir --sourceName ./hmlr-network -a ./dist/hmlr-network.bna",
     "pretest": "npm run lint",
     "test": "mocha --recursive"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
-    "composer-common": "^0.11.3",
+    "composer-common": "0.13.1",
     "express": "^4.15.4",
     "log4js": "^2.3.3"
   }
