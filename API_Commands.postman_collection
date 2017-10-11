@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "Land Reg",
-		"_postman_id": "6e2b18b8-ce9b-ad39-1468-2e03ddb3b495",
+		"_postman_id": "d6fb1512-e287-25ed-1a37-20ef93b71472",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 				{
 					"name": "Create Property Exchange",
 					"request": {
-						"url": "localhost:3500/api/create/propertyexchange",
+						"url": "{{server}}/api/create/propertyexchange",
 						"method": "POST",
 						"header": [
 							{
@@ -25,7 +25,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"contractID\": \"contract1\",\n\t\"contractAttributes\": {\n\t\t\"status\": \"DRAFTED\",\n        \"agreedSalePriceInGBP\": 500000,\n        \"stampDuty\": 15000,\n        \"representativeFees\": 1500,\n        \"property\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Property\",\n\t\t\t\"id\": \"79984\"\n\t\t},\n\t\t\"representative\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Representative\",\n\t\t\t\"id\": \"shoosmiths\"\n\t\t},\n\t\t\"buyer\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Buyer\",\n\t\t\t\t\"id\": \"100000008\"\n\t\t\t}\n\t\t],\n\t\t\"seller\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000001\"\n\t\t\t},{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000002\"\n\t\t\t}\n\t\t]\n\t},\n\t\"propertyExchangeID\": \"propertyExchange1\",\n\t\"user\": \"shoosmiths\"\n}"
+							"raw": "{\n\t\"contractID\": \"contract1\",\n\t\"contractAttributes\": {\n\t\t\"status\": \"DRAFTED\",\n        \"agreedSalePriceInGBP\": 230000,\n        \"stampDuty\": 2300,\n        \"representativeFees\": 1500,\n        \"property\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Property\",\n\t\t\t\"id\": \"79984\"\n\t\t},\n\t\t\"buyer\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Buyer\",\n\t\t\t\t\"id\": \"100000008\"\n\t\t\t}\n\t\t],\n\t\t\"seller\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000001\"\n\t\t\t},{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000002\"\n\t\t\t}\n\t\t]\n\t},\n\t\"propertyExchangeID\": \"propertyExchange1\",\n\t\"user\": \"100000001\"\n}"
 						},
 						"description": ""
 					},
@@ -34,7 +34,7 @@
 				{
 					"name": "Update Contract",
 					"request": {
-						"url": "localhost:3500/api/transaction",
+						"url": "{{server}}/api/transaction",
 						"method": "POST",
 						"header": [
 							{
@@ -54,7 +54,7 @@
 				{
 					"name": "Update Contract Completion Date",
 					"request": {
-						"url": "localhost:3500/api/transaction",
+						"url": "{{server}}/api/transaction",
 						"method": "POST",
 						"header": [
 							{
@@ -74,7 +74,7 @@
 				{
 					"name": "Approve Contract (as seller 1)",
 					"request": {
-						"url": "localhost:3500/api/transaction",
+						"url": "{{server}}/api/transaction",
 						"method": "POST",
 						"header": [
 							{
@@ -94,7 +94,7 @@
 				{
 					"name": "Approve Contract (as seller 2)",
 					"request": {
-						"url": "localhost:3500/api/transaction",
+						"url": "{{server}}/api/transaction",
 						"method": "POST",
 						"header": [
 							{
@@ -114,7 +114,7 @@
 				{
 					"name": "Approve Contract (as buyer)",
 					"request": {
-						"url": "localhost:3500/api/transaction",
+						"url": "{{server}}/api/transaction",
 						"method": "POST",
 						"header": [
 							{
@@ -140,7 +140,7 @@
 				{
 					"name": "Confirm Deposit Payment",
 					"request": {
-						"url": "localhost:3500/api/payment/deposit",
+						"url": "{{server}}/api/payment/deposit",
 						"method": "POST",
 						"header": [
 							{
@@ -151,7 +151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"receiptId\": \"depositReceipt1\",\n\t\"attributes\": {\n\t\t\"buyer\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Buyer\",\n\t\t\t\"id\": \"100000008\"\n\t\t},\n\t\t\"ammountInGBP\": 5000\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
+							"raw": "{\n\t\"receiptId\": \"sidepositReceipt1\",\n\t\"attributes\": {\n\t\t\"buyer\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Buyer\",\n\t\t\t\"id\": \"100000008\"\n\t\t},\n\t\t\"ammountInGBP\": 5000\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
 						},
 						"description": ""
 					},
@@ -160,7 +160,7 @@
 				{
 					"name": "Confirm Mortgage Payment",
 					"request": {
-						"url": "localhost:3500/api/payment/mortgage",
+						"url": "{{server}}/api/payment/mortgage",
 						"method": "POST",
 						"header": [
 							{
@@ -180,7 +180,7 @@
 				{
 					"name": "Confirm Additional Payment",
 					"request": {
-						"url": "localhost:3500/api/payment/additional",
+						"url": "{{server}}/api/payment/additional",
 						"method": "POST",
 						"header": [
 							{
@@ -200,7 +200,7 @@
 				{
 					"name": "Confirm Escrow Payout",
 					"request": {
-						"url": "localhost:3500/api/payment/escrowpayout",
+						"url": "{{server}}/api/payment/escrowpayout",
 						"method": "POST",
 						"header": [
 							{
@@ -226,7 +226,7 @@
 				{
 					"name": "Confirm Property Exchange",
 					"request": {
-						"url": "localhost:3500/api/property/transfer",
+						"url": "{{server}}/api/property/transfer",
 						"method": "POST",
 						"header": [
 							{
@@ -252,7 +252,7 @@
 				{
 					"name": "Create Asset",
 					"request": {
-						"url": "localhost:3500/api/create/asset",
+						"url": "{{server}}/api/create/asset",
 						"method": "POST",
 						"header": [
 							{
@@ -272,7 +272,7 @@
 				{
 					"name": "Create Participant",
 					"request": {
-						"url": "localhost:3500/api/create/participant",
+						"url": "{{server}}/api/create/participant",
 						"method": "POST",
 						"header": [
 							{
@@ -292,7 +292,7 @@
 				{
 					"name": "Get Asset",
 					"request": {
-						"url": "localhost:3500/api/get/asset",
+						"url": "{{server}}/api/get/asset",
 						"method": "POST",
 						"header": [
 							{
@@ -303,7 +303,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"type\": \"Property\",\n\t\"id\": \"79984\",\n\t\"user\": \"hmlr\"\n}"
+							"raw": "{\n\t\"type\": \"PropertyExchange\",\n\t\"id\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
 						},
 						"description": ""
 					},
@@ -312,7 +312,7 @@
 				{
 					"name": "Get Participant",
 					"request": {
-						"url": "localhost:3500/api/get/participant",
+						"url": "{{server}}/api/get/participant",
 						"method": "POST",
 						"header": [
 							{
@@ -332,7 +332,7 @@
 				{
 					"name": "Get All Assets",
 					"request": {
-						"url": "localhost:3500/api/get/asset/all",
+						"url": "{{server}}/api/get/asset/all",
 						"method": "POST",
 						"header": [
 							{
@@ -343,7 +343,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"type\": \"Property\",\n\t\"user\": \"hmlr\"\n}"
+							"raw": "{\n\t\"type\": \"PropertyExchange\",\n\t\"user\": \"hmlr\"\n}"
 						},
 						"description": ""
 					},
@@ -352,7 +352,7 @@
 				{
 					"name": "Get All Participants",
 					"request": {
-						"url": "localhost:3500/api/get/participant/all",
+						"url": "{{server}}/api/get/participant/all",
 						"method": "POST",
 						"header": [
 							{
@@ -363,7 +363,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"type\": \"Seller\",\n\t\"user\": \"shoosmiths\"\n}"
+							"raw": "{\n\t\"type\": \"Representative\",\n\t\"user\": \"admin\"\n}"
 						},
 						"description": ""
 					},
@@ -378,27 +378,7 @@
 				{
 					"name": "Populate",
 					"request": {
-						"url": "localhost:3500/api/populate/participants",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\n}"
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Populate copy",
-					"request": {
-						"url": "localhost:3500/api/populate/assets",
+						"url": "{{server}}/api/populate",
 						"method": "POST",
 						"header": [
 							{
@@ -418,7 +398,7 @@
 				{
 					"name": "Reconnect",
 					"request": {
-						"url": "localhost:3500/api/reconnect",
+						"url": "{{server}}/api/reconnect",
 						"method": "POST",
 						"header": [
 							{
@@ -438,7 +418,7 @@
 				{
 					"name": "Issue Identity",
 					"request": {
-						"url": "localhost:3500/api/create/identity",
+						"url": "{{server}}/api/create/identity",
 						"method": "POST",
 						"header": [
 							{
