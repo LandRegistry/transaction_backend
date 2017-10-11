@@ -1,0 +1,7 @@
+{
+    "Composer": {
+        "connectionProfile": "ibmcs",
+        "objectStoreService": "TransactionAPI Object Storage",
+        "objectStoreContainer": "Composer Wallet"
+    }
+}

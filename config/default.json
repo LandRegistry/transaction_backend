@@ -1,0 +1,8 @@
+{
+    "Composer": {
+        "connectionProfile": "hlfv1",
+        "businessNetwork": "org-acme-biznet",
+        "userId": "admin",
+        "password": "adminpw"
+    }
+}

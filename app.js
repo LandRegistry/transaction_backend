@@ -7,23 +7,24 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const log4js = require('log4js');
 const cfenv = require('cfenv');
+const config = require('config');
 const logger = log4js.getLogger();
 logger.level = 'debug';
 process.setMaxListeners(0);
 
-// Defaults are for local running
-const connectionProfileName = process.env.COMPOSER_CONNECTION_PROFILE || 'hlfv1';
-const businessNetworkIdentifier = process.env.COMPOSER_BUSINESS_NETWORK || 'org-acme-biznet';
-const userID = process.env.COMPOSER_USER_ID || 'admin';
-const userSecret = process.env.COMPOSER_USER_SECRET || 'adminpw';
-const os_service = process.env.OBJECT_STORAGE_SERVICE || '';
-const os_container = process.env.OBJECT_STORAGE_CONTAINER || '';
+// use NODE_ENV to tell config which config to choose
+// development=config/default.json (for local)
+// roduction=config/production.json (for bluemix) - will extend values from default
+const connectionProfileName = config.get('Composer.connectionProfile');
+const businessNetworkIdentifier = config.get('Composer.businessNetwork');
+const userID = config.get('Composer.userId');
+const userSecret = config.get('Composer.password');
 
 let wallet = null; // Local
-if (os_container !== '') {
+if (config.has('Composer.objectStoreService')) {
     // This wallet has the connection profile files (certs etc) in it. It'll load them from
     // the object store on bluemix
-    wallet = new ObjectStorageWallet(os_container, os_service);
+    wallet = new ObjectStorageWallet(config.get('Composer.objectStoreContainer'), config.get('Composer.objectStoreService'));
 }
 
 

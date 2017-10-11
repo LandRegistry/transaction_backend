@@ -8,12 +8,6 @@ applications:
    services:
     - TransactionAPI Object Storage
    env:
-    COMPOSER_CONNECTION_PROFILE: ibmcs
-    COMPOSER_BUSINESS_NETWORK: org-acme-biznet
-    COMPOSER_USER_ID: admin
-    COMPOSER_USER_SECRET: adminpw
-    OBJECT_STORAGE_CONTAINER: Composer Wallet
-    OBJECT_STORAGE_SERVICE: TransactionAPI Object Storage
     COMPOSER_CONFIG: |
       {
           "connectionProfiles": {
