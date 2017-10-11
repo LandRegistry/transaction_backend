@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const log4js = require('log4js');
 const cfenv = require('cfenv');
-let logger = log4js.getLogger();
+const logger = log4js.getLogger();
 logger.level = 'debug';
 process.setMaxListeners(0);
 
@@ -21,7 +21,8 @@ const os_container = process.env.OBJECT_STORAGE_CONTAINER || '';
 
 let wallet = null; // Local
 if (os_container !== '') {
-    // This wallet has the connection profile files (certs etc) in it
+    // This wallet has the connection profile files (certs etc) in it. It'll load them from
+    // the object store on bluemix
     wallet = new ObjectStorageWallet(os_container, os_service);
 }
 
@@ -34,20 +35,14 @@ let identities = [  {"userID":"100000001"}, {"userID":"100000002"}, {"userID":"1
                     {"userID":"santander"}, {"userID":"hsbc"}, {"userID":"halifax"}, {"userID":"shoosmiths"}, {"userID":"myhomemove"}, {"userID":"countrywide"},
                     {"userID":"escrow"}, {"userID":"hmrc"}, {"userID":"hmlr"}];
 
-//let identities = [  {"userID":"b3"}, {"userID":"s3"}, {"userID":"r3"},{"userID":"l3"}, {"userID":"p3"}, {"userID":"e3"}, {"userID":"hmlr"}, {"userID":"hmrc"}]
-
-
-
 // Helpers
 let serializer;
 let factory;
-//let businessNetworkConnection = new BusinessNetworkConnection();
 
 let connections = {};
 connections['admin'] = new BusinessNetworkConnection();
 
 // Connect to business network
-// businessNetworkConnection.connect('hmlrchannel', 'hmlr-network', 'admin', 'adminpw').then((result) => {
 connections['admin'].connect(connectionProfileName, businessNetworkIdentifier, userID, userSecret, wallet == null ? {} : { wallet: wallet }).then((result) => {
     logger.debug('Connected to hmlr-network!');
     businessNetworkDefinition = result;

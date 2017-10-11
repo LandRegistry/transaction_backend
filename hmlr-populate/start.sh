@@ -6,6 +6,8 @@ composer network deploy -a hmlr-network.bna -p hlfv1 -i PeerAdmin -s adminpw
 
 pkill -f app.js
 pkill -f composer-rest-server
+
+npm prune && npm install
 node app.js &
 composer-rest-server -p hlfv1 -n org-acme-biznet -i PeerAdmin -s adm1npw -N always -w true &
 
