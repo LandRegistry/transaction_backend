@@ -12,9 +12,10 @@ const logger = log4js.getLogger();
 logger.level = 'debug';
 process.setMaxListeners(0);
 
-// use NODE_ENV to tell config which config to choose
-// development=config/default.json (for local)
-// roduction=config/production.json (for bluemix) - will extend values from default
+// use NODE_ENV to tell config which file to choose
+// development: config/default.json (for local)
+// stage: config/stage.json (for API local, composer/fabric bluemix) - will extend values from default
+// production: config/production.json (for bluemix) - will extend values from default
 const connectionProfileName = config.get('Composer.connectionProfile');
 const businessNetworkIdentifier = config.get('Composer.businessNetwork');
 const userID = config.get('Composer.userId');

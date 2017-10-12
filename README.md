@@ -11,6 +11,8 @@ You will need:
 * Docker (running)
 * Docker-compose
 * Node
+* composer-cli installed globally (`npm install -g composer-cli@0.13.1`)
+* composer-rest-server installed globally (`npm install -g composer-rest-server@0.13.1`)
 
 ```bash
 /hmlr-populate/start.sh
