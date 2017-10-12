@@ -1,0 +1,5 @@
+node_modules/
+composer-data/
+composer.sh
+logs/
+composer-logs/

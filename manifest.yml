@@ -1,0 +1,38 @@
+---
+applications:
+ - name: TransactionAPI
+   instances: 1
+   domain: eu-gb.mybluemix.net
+   host: hmlr-ds-transactionapi
+   memory: 196M
+   services:
+    - TransactionAPI Object Storage
+   env:
+    COMPOSER_CONFIG: |
+      {
+          "connectionProfiles": {
+            "ibmcs": {
+                "name": "ibmcd",
+                "type": "hlfv1",
+                "orderers": [
+                    {
+                      "url": "grpc://169.51.15.13:31010"
+                    }
+                ],
+                "ca": {
+                    "url": "http://169.51.15.13:30000",
+                    "name": "CA1"
+                },
+                "peers": [
+                    {
+                        "requestURL": "grpc://169.51.15.13:30110",
+                        "eventURL": "grpc://169.51.15.13:30111"
+                    }
+                ],
+                "keyValStore": "/not/used/wallet/is/instead",
+                "channel": "channel1",
+                "mspID": "Org1MSP",
+                "timeout": "300"
+            }
+          }
+      }

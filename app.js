@@ -1,14 +1,32 @@
 const ComposerCommon = require('composer-common');
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const express = require('express');
+const ObjectStorageWallet = require('./objectstorewallet');
 const app = express();
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const log4js = require('log4js');
-let logger = log4js.getLogger();
+const cfenv = require('cfenv');
+const config = require('config');
+const logger = log4js.getLogger();
 logger.level = 'debug';
 process.setMaxListeners(0);
 
+// use NODE_ENV to tell config which file to choose
+// development: config/default.json (for local)
+// stage: config/stage.json (for API local, composer/fabric bluemix) - will extend values from default
+// production: config/production.json (for bluemix) - will extend values from default
+const connectionProfileName = config.get('Composer.connectionProfile');
+const businessNetworkIdentifier = config.get('Composer.businessNetwork');
+const userID = config.get('Composer.userId');
+const userSecret = config.get('Composer.password');
+
+let wallet = null; // Local
+if (config.has('Composer.objectStoreService')) {
+    // This wallet has the connection profile files (certs etc) in it. It'll load them from
+    // the object store on bluemix
+    wallet = new ObjectStorageWallet(config.get('Composer.objectStoreContainer'), config.get('Composer.objectStoreService'));
+}
 
 
 app.use(bodyParser.json());
@@ -19,21 +37,15 @@ let identities = [  {"userID":"100000001"}, {"userID":"100000002"}, {"userID":"1
                     {"userID":"santander"}, {"userID":"hsbc"}, {"userID":"halifax"}, {"userID":"shoosmiths"}, {"userID":"myhomemove"}, {"userID":"countrywide"},
                     {"userID":"escrow"}, {"userID":"hmrc"}, {"userID":"hmlr"}];
 
-//let identities = [  {"userID":"b3"}, {"userID":"s3"}, {"userID":"r3"},{"userID":"l3"}, {"userID":"p3"}, {"userID":"e3"}, {"userID":"hmlr"}, {"userID":"hmrc"}]
-                    
-
-
 // Helpers
 let serializer;
 let factory;
-let businessNetworkConnection = new BusinessNetworkConnection();
 
 let connections = {};
 connections['admin'] = new BusinessNetworkConnection();
 
 // Connect to business network
-// businessNetworkConnection.connect('hmlrchannel', 'hmlr-network', 'admin', 'adminpw').then((result) => {
-connections['admin'].connect('hlfv1', 'org-acme-biznet', 'admin', 'adminpw').then((result) => {
+connections['admin'].connect(connectionProfileName, businessNetworkIdentifier, userID, userSecret, wallet == null ? {} : { wallet: wallet }).then((result) => {
     logger.debug('Connected to hmlr-network!');
     businessNetworkDefinition = result;
     serializer = businessNetworkDefinition.getSerializer();
@@ -43,9 +55,11 @@ connections['admin'].connect('hlfv1', 'org-acme-biznet', 'admin', 'adminpw').the
 
 // TODO: create connection profile loader
 
-
-app.listen(3500, () => {
-    logger.debug('Example app listening on port 3500!');
+// get the app environment from Cloud Foundry
+// if running locally, it will return sensible defaults apparently!
+var appEnv = cfenv.getAppEnv();
+app.listen(appEnv.port, () => {
+    logger.debug('Example app listening on port ' + appEnv.port);
 });
 
 app.use(function (req, res, next) {
@@ -54,13 +68,15 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Methods", "GET, OPTIONS, POST, PUT");
     next();
 });
-  
+
 app.get('/', function(req, res, next) {
 // Handle the get for this route
+res.send('OK');
 });
 
 app.post('/', function(req, res, next) {
 // Handle the post for this route
+res.send('OK');
 });
 
 
@@ -92,7 +108,7 @@ function createAsset(namespace, type, id, attributes, bnc) {
         // Make the asset
         let newResource;
         try {
-            newResource = factory.newResource(namespace, type, id, { generate: 'empty', includeOptionalFields: false })            
+            newResource = factory.newResource(namespace, type, id, { generate: 'empty', includeOptionalFields: false })
         } catch (error) {
             logger.error(error.message);
             reject(error);
@@ -154,7 +170,7 @@ function createParticipant(namespace, type, id, attributes, bnc) {
         // Make the asset
         let newResource;
         try {
-            newResource = factory.newResource(namespace, type, id, {generate: 'empty', includeOptionalFields: false})            
+            newResource = factory.newResource(namespace, type, id, {generate: 'empty', includeOptionalFields: false})
         } catch (error) {
             logger.error(error.message);
             reject(error);
@@ -338,7 +354,7 @@ function getAllParticipants(namespace, type, bnc) {
 function respondWithAllParticipants(res, body) {
     logger.debug('respondWithAllParticipants() called with ' + JSON.stringify(body));
     getAllParticipants('org.hmlr.model', body.type, connections[body.user]).then((assets) => {
-        let serialisedAssets = assets.map((asset) => {return serializer.toJSON(asset)});        
+        let serialisedAssets = assets.map((asset) => {return serializer.toJSON(asset)});
         res.status(200).send(serialisedAssets);
     }).catch((error) => {
         res.status(200).send("ERROR " + error.message);
@@ -427,7 +443,7 @@ function respondWithTransaction(res, body) {
         //     }).catch((error) => {
         //         logger.error(error.message);
         //         res.status(400).send("ERROR " + error.message);
-        //     });                
+        //     });
         // } else {
             res.status(200).send("SUCCESS");
         //}
@@ -450,7 +466,7 @@ function connectToBusinessNetwork(identity) {
 
         // connect
         let newConnection = new BusinessNetworkConnection();
-        return newConnection.connect('hlfv1', 'org-acme-biznet', identity.userID, "blank").then((result) => {
+        return newConnection.connect(connectionProfileName, businessNetworkIdentifier, identity.userID, "blank", wallet == null ? {} : { wallet: wallet }).then((result) => {
             logger.debug('Created new connection object for for Participant ' + identity.userID );
             resolve(newConnection);
         }).catch((error) => {
@@ -473,11 +489,11 @@ app.post("/api/reconnect", (req, res) => {
 // function reconnect() {
 
 //     let promises = [];
-    
+
 //         identities.forEach(function(identity) {
 //             promises.push(connectToBusinessNetwork(identity).then((connection) => {connections[identity.userID] = connection}));
 //         });
-    
+
 //         Promise.all(promises);
 // }
 
@@ -493,11 +509,11 @@ function createIdentity(namespace, type, id, bnc) {
 
             // Create a connection object for it
             let newConnection = new BusinessNetworkConnection();
-            return newConnection.connect('hlfv1', 'org-acme-biznet', identity.userID, identity.userSecret).then((result) => {
+            return newConnection.connect(connectionProfileName, businessNetworkIdentifier, identity.userID, identity.userSecret, wallet == null ? {} : { wallet: wallet }).then((result) => {
                 logger.debug('Created new connection object for for Participant' + id + ', secret is ' + identity.userSecret);
                 resolve(newConnection);
             });
-            
+
         }).catch((error) => {
             logger.error(error.message);
             reject(error);
@@ -540,7 +556,7 @@ app.post("/api/create/propertyexchange", (req, res) => {
         };
 
         return createAsset('org.hmlr.model', 'PropertyExchange', req.body.propertyExchangeID, {contract: contractRelationship, status: "PRE_EXCHANGE"}, connections[req.body.user]).then(() => {
-            
+
             return invokeTransaction('org.hmlr.model', 'LockProperty', {propertyId: req.body.contractAttributes.property.id}, connections[req.body.user]).then(() => {
                 res.status(200).send("SUCCESS");
             }).catch((error) => {
@@ -568,15 +584,15 @@ app.post("/api/payment/deposit", (req, res) => {
 
         if(propertyExchange["contract"]["status"] === "FINALISED") {
             return createAsset('org.hmlr.model', 'DepositReceipt', req.body.receiptId, req.body.attributes, connections[req.body.user]).then(() => {
-                
+
                 return invokeTransaction('org.hmlr.model', 'ConfirmDepositPayment', {propertyExchangeId: req.body.propertyExchangeId, depositReceiptId: req.body.receiptId}, connections[req.body.user]).then(() => {
                     res.status(200).send("SUCCESS");
-        
+
                 }).catch((error) => {
                     logger.error(error.message);
                     res.status(400).send("ERROR " + error.message);
                 });
-        
+
             }).catch((error) => {
                 logger.error(error.message);
                 res.status(400).send("ERROR " + error.message);
@@ -598,12 +614,12 @@ app.post("/api/payment/mortgage", (req, res) => {
             createAsset('org.hmlr.model', 'MortgageReceipt', req.body.receiptId, req.body.attributes, connections[req.body.user]).then(() => {
                 return invokeTransaction('org.hmlr.model', 'ConfirmMortgagePayment', {propertyExchangeId: req.body.propertyExchangeId, mortgageReceiptId: req.body.receiptId}, connections[req.body.user]).then(() => {
                     res.status(200).send("SUCCESS");
-        
+
                 }).catch((error) => {
                     logger.error(error.message);
                     res.status(400).send("ERROR " + error.message);
                 });
-        
+
             }).catch((error) => {
                 logger.error(error.message);
                 res.status(400).send("ERROR " + error.message);
@@ -623,15 +639,15 @@ app.post("/api/payment/additional", (req, res) => {
         if(propertyExchange["mortgageReceipt"]) {
 
             return createAsset('org.hmlr.model', 'AdditionalFundsReceipt', req.body.receiptId, req.body.attributes, connections[req.body.user]).then(() => {
-                
+
                 return invokeTransaction('org.hmlr.model', 'ConfirmAdditionalFundsPayment', {propertyExchangeId: req.body.propertyExchangeId, additionalFundsReceiptId: req.body.receiptId}, connections[req.body.user]).then(() => {
                     res.status(200).send("SUCCESS");
-        
+
                 }).catch((error) => {
                     logger.error(error.message);
                     res.status(400).send("ERROR " + error.message);
                 });
-        
+
             }).catch((error) => {
                 logger.error(error.message);
                 res.status(400).send("ERROR " + error.message);
@@ -651,15 +667,15 @@ app.post("/api/payment/escrowpayout", (req, res) => {
         if(propertyExchange["additionalFundsReceipt"]) {
 
             return createAsset('org.hmlr.model', 'EscrowPayoutReceipt', req.body.receiptId, req.body.attributes, connections[req.body.user]).then(() => {
-                
+
                 return invokeTransaction('org.hmlr.model', 'ConfirmEscrowPayoutReceipt', {propertyExchangeId: req.body.propertyExchangeId, escrowPayoutReceiptId: req.body.receiptId}, connections[req.body.user]).then(() => {
                     res.status(200).send("SUCCESS");
-        
+
                 }).catch((error) => {
                     logger.error(error.message);
                     res.status(400).send("ERROR " + error.message);
                 });
-        
+
             }).catch((error) => {
                 logger.error(error.message);
                 res.status(400).send("ERROR " + error.message);
@@ -711,12 +727,12 @@ function createExistingIdentities() {
 
 
 // app.post('/api/populate', (req, res) => {
-    
+
 //     Promise.resolve().then(() => {
-    
+
 //             return createParticipantAndGiveIdentity('org.hmlr.model', 'Buyer', 'b3', {});
 //         }).then(() => {
-    
+
 //             return createParticipantAndGiveIdentity('org.hmlr.model', 'Representative', 'r3', {});
 //         }).then(() => {
 
@@ -748,21 +764,21 @@ function createExistingIdentities() {
 
 //         }).then(() => {
 //             return createParticipantAndGiveIdentity('org.hmlr.model', 'HMRC', 'hmrc', {}, connections['admin'])
-            
+
 //         }).then(() => {
 //             return createParticipantAndGiveIdentity('org.hmlr.model', 'HMLR', 'hmlr', {}, connections['admin'])
 
 //         }).then(() => {
-        
+
 //         logger.debug('Connections: ' + JSON.stringify(Object.keys(connections)));
 
 //         res.sendStatus(200);
 //     });
 // });
-  
 
-  
-  
+
+
+
 
 
 
@@ -779,7 +795,7 @@ app.post('/api/populate', (req, res) => {
             "saleParticipantFirstName": "Fred",
             "saleParticipantLastName": "Jones"
         }, connections['admin']).then(() => {
-            
+
             return createParticipantAndGiveIdentity('org.hmlr.model', 'Seller', '100000002', {
                 "title": "Mrs",
                 "saleParticipantFirstName": "Tina",
@@ -927,20 +943,20 @@ app.post('/api/populate', (req, res) => {
             }, connections['admin'])
         }).then(() => {
             return createParticipantAndGiveIdentity('org.hmlr.model', 'HMLR', 'hmlr', {}, connections['admin'])
+        }).then(() => {
+            logger.debug('Connections: ' + JSON.stringify(Object.keys(connections)));
+            res.sendStatus(200);
         });
-        
-        logger.debug('Connections: ' + JSON.stringify(Object.keys(connections)));
-
-        res.sendStatus(200);
     });
+    
 });
-  
-  
-  
-  
+
+
+
+
 /*
 TODO:
 
 - balance field in Buyer isn't created automatically
-- 
+-
 */

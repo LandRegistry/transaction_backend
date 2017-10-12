@@ -1,0 +1,441 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Land Reg",
+		"_postman_id": "d6fb1512-e287-25ed-1a37-20ef93b71472",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Contracts & Property Exchange",
+			"description": "",
+			"item": [
+				{
+					"name": "Create Property Exchange",
+					"request": {
+						"url": "{{server}}/api/create/propertyexchange",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"contractID\": \"contract1\",\n\t\"contractAttributes\": {\n\t\t\"status\": \"DRAFTED\",\n        \"agreedSalePriceInGBP\": 230000,\n        \"stampDuty\": 2300,\n        \"representativeFees\": 1500,\n        \"property\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Property\",\n\t\t\t\"id\": \"79984\"\n\t\t},\n\t\t\"buyer\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Buyer\",\n\t\t\t\t\"id\": \"100000008\"\n\t\t\t}\n\t\t],\n\t\t\"seller\": [\n\t\t\t{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000001\"\n\t\t\t},{\n\t\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\t\"type\": \"Seller\",\n\t\t\t\t\"id\": \"100000002\"\n\t\t\t}\n\t\t]\n\t},\n\t\"propertyExchangeID\": \"propertyExchange1\",\n\t\"user\": \"100000001\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Contract",
+					"request": {
+						"url": "{{server}}/api/transaction",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"UpdateContract\",\n\t\"user\": \"shoosmiths\",\n\t\"attributes\": {\n\t\t\"contractTerms\": \"Some terms go here. \\n In a format that can be read back by the front end!\",\n\t\t\"contractToUpdateId\": \"contract1\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Contract Completion Date",
+					"request": {
+						"url": "{{server}}/api/transaction",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"UpdateContractCompletionDate\",\n\t\"user\": \"100000008\",\n\t\"attributes\": {\n\t\t\"completionDate\": \"2017-11-05T18:00:00.000Z\",\n\t\t\"contractId\": \"contract1\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Contract (as seller 1)",
+					"request": {
+						"url": "{{server}}/api/transaction",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"ApproveContract\",\n\t\"user\": \"100000001\",\n\t\"attributes\": {\n\t\t\"contractToUpdateId\": \"contract1\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Contract (as seller 2)",
+					"request": {
+						"url": "{{server}}/api/transaction",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"ApproveContract\",\n\t\"user\": \"100000002\",\n\t\"attributes\": {\n\t\t\"contractToUpdateId\": \"contract1\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Contract (as buyer)",
+					"request": {
+						"url": "{{server}}/api/transaction",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"ApproveContract\",\n\t\"user\": \"100000008\",\n\t\"attributes\": {\n\t\t\"contractToUpdateId\": \"contract1\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"description": "",
+			"item": [
+				{
+					"name": "Confirm Deposit Payment",
+					"request": {
+						"url": "{{server}}/api/payment/deposit",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"receiptId\": \"sidepositReceipt1\",\n\t\"attributes\": {\n\t\t\"buyer\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Buyer\",\n\t\t\t\"id\": \"100000008\"\n\t\t},\n\t\t\"ammountInGBP\": 5000\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Mortgage Payment",
+					"request": {
+						"url": "{{server}}/api/payment/mortgage",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"receiptId\": \"mortgageReceipt1\",\n\t\"attributes\": {\n\t\t\"lender\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Lender\",\n\t\t\t\"id\": \"santander\"\n\t\t},\n\t\t\"ammountInGBP\": 495000\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"santander\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Additional Payment",
+					"request": {
+						"url": "{{server}}/api/payment/additional",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"receiptId\": \"additionalPaymentReceipt1\",\n\t\"attributes\": {\n\t\t\"buyer\": {\n\t\t\t\"namespace\": \"org.hmlr.model\",\n\t\t\t\"type\": \"Buyer\",\n\t\t\t\"id\": \"100000008\"\n\t\t},\n\t\t\"ammountInGBP\": 1500\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Escrow Payout",
+					"request": {
+						"url": "{{server}}/api/payment/escrowpayout",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"receiptId\": \"escrowPayoutReceipt1\",\n\t\"attributes\": {\n\t\t\"sellerAmmountInGBP\": 450000,\n\t\t\"sellerLenderAmmountInGBP\": 50000,\n\t\t\"sellerHMRCAmmountInGBP\": 15000\n\t},\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"escrow\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Land Reg",
+			"description": "",
+			"item": [
+				{
+					"name": "Confirm Property Exchange",
+					"request": {
+						"url": "{{server}}/api/property/transfer",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"propertyExchangeId\": \"propertyExchange1\",\n\t\"user\": \"hmlr\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assets & Participants",
+			"description": "",
+			"item": [
+				{
+					"name": "Create Asset",
+					"request": {
+						"url": "{{server}}/api/create/asset",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"someContractId\",\n\t\"type\": \"Contract\",\n\t\"user\": \"admin\",\n\t\"attributes\": {\n\t\t\"status\": \"DRAFTED\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create Participant",
+					"request": {
+						"url": "{{server}}/api/create/participant",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"aNewBuyer\",\n\t\"type\": \"Buyer\",\n\t\"user\": \"admin\",\n\t\"attributes\": {\n\t\t\"saleParticipantFirstName\": \"Anew\",\n\t\t\"saleParticipantLastName\": \"Buyer\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Asset",
+					"request": {
+						"url": "{{server}}/api/get/asset",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"PropertyExchange\",\n\t\"id\": \"propertyExchange1\",\n\t\"user\": \"100000008\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Participant",
+					"request": {
+						"url": "{{server}}/api/get/participant",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"Buyer\",\n\t\"id\": \"aNewBuyer\",\n\t\"user\": \"admin\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Assets",
+					"request": {
+						"url": "{{server}}/api/get/asset/all",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"PropertyExchange\",\n\t\"user\": \"hmlr\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Participants",
+					"request": {
+						"url": "{{server}}/api/get/participant/all",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"Representative\",\n\t\"user\": \"admin\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"description": "",
+			"item": [
+				{
+					"name": "Populate",
+					"request": {
+						"url": "{{server}}/api/populate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Reconnect",
+					"request": {
+						"url": "{{server}}/api/reconnect",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Issue Identity",
+					"request": {
+						"url": "{{server}}/api/create/identity",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"Buyer\",\n\t\"id\": \"c99\",\n\t\"user\": \"admin\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

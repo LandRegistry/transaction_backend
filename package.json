@@ -3,41 +3,40 @@
   "author": "author",
   "description": "Land Registry Business Network",
   "version": "0.0.1",
-  "devDependencies": {
-    "browserfs": "^1.2.0",
-    "chai": "^3.5.0",
-    "composer-admin": "latest",
-    "composer-cli": "latest",
-    "composer-client": "latest",
-    "composer-connector-embedded": "latest",
-    "eslint": "^3.6.1",
-    "istanbul": "^0.4.5",
-    "jsdoc": "^3.4.1",
-    "mkdirp": "^0.5.1",
-    "mocha": "^3.2.0",
-    "moment": "^2.17.1"
-  },
   "keywords": [],
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "repository": {
     "type": "e.g. git",
     "url": "URL"
   },
   "scripts": {
     "start": "node app.js",
-    "deploy": "./scripts/deploy.sh",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "lint": "eslint .",
     "postlicchk": "npm run doc",
     "postlint": "npm run licchk",
-    "prepublish": "mkdirp ./dist && composer archive create  --sourceType dir --sourceName ./hmlr-network -a ./dist/hmlr-network.bna",
     "pretest": "npm run lint",
     "test": "mocha --recursive"
   },
+  "devDependencies": {
+    "eslint": "^3.6.1",
+    "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.1",
+    "mocha": "^3.2.0",
+    "browserfs": "^1.2.0",
+    "chai": "^3.5.0"
+  },
   "dependencies": {
+    "bluemix-object-storage": "^2.0.1",
     "body-parser": "^1.17.2",
-    "composer-common": "^0.11.3",
+    "cfenv": "^1.0.4",
+    "composer-client": "0.13.1",
+    "composer-common": "0.13.1",
+    "composer-connector-embedded": "0.13.1",
+    "config": "^1.26.2",
     "express": "^4.15.4",
-    "log4js": "^2.3.3"
+    "log4js": "^2.3.3",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.17.1"
   }
 }

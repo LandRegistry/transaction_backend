@@ -1,0 +1,6 @@
+// API local, Composer on bluemix
+{
+    "Composer": {
+        "connectionProfile": "ibmcs"
+    }
+}
