@@ -108,7 +108,8 @@ function createAsset(namespace, type, id, attributes, bnc) {
         // Make the asset
         let newResource;
         try {
-            newResource = factory.newResource(namespace, type, id, { generate: 'empty', includeOptionalFields: false })
+		newResource = factory.newResource(namespace, type, id, { generate: 'empty', includeOptionalFields: false })
+	   
         } catch (error) {
             logger.error(error.message);
             reject(error);
@@ -798,7 +799,7 @@ app.post('/api/populate', (req, res) => {
 
             return createParticipantAndGiveIdentity('org.hmlr.model', 'Seller', '100000002', {
                 "title": "Mrs",
-                "saleParticipantFirstName": "Tina",
+                "saleParticipantFirstName": "Debbie",
                 "saleParticipantLastName": "Jones"
             }, connections['admin']);
         }).then(() => {
@@ -840,8 +841,8 @@ app.post('/api/populate', (req, res) => {
 
             return createParticipantAndGiveIdentity('org.hmlr.model', 'Buyer', '100000008', {
                 "title": "Mrs",
-                "saleParticipantFirstName": "Jane",
-                "saleParticipantLastName": "Smith"
+                "saleParticipantFirstName": "Emma",
+                "saleParticipantLastName": "Young"
             }, connections['admin']);
         }).then(() => {
 
@@ -874,8 +875,8 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '79984', {
-                "address": "9 Cotham Lawn Road, Bristol (BS6 6DU)",
-                "propertyValueInGBP": 500000,
+                "address": "21 Cotham Lawn Road, Bristol (BS6 6DU)",
+                "propertyValueInGBP": 180000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000001" },
                 { "namespace": "org.hmlr.model", "type": "Seller", "id": "100000002" }]
@@ -960,3 +961,303 @@ TODO:
 - balance field in Buyer isn't created automatically
 -
 */
+
+//ADDED by R
+
+//==================================================================
+//
+//  RESET THE DEMO BY CREATING NEW PROPERTY
+//
+//==================================================================
+app.post('/api/resetdemo', (req, res) => {
+   var randomNumberBetween0and10000 = ''+Math.floor(Math.random() * 10000);
+   logger.debug('random number created for Property id is::'+randomNumberBetween0and10000);
+    Promise.resolve().then(() => {
+	   
+            return createAsset('org.hmlr.model', 'Property', randomNumberBetween0and10000, {
+                "address": "21 Cotham Lawn Road, Bristol (BS6 6DU)",
+                "propertyValueInGBP": 180000,
+                "status": "UP_FOR_SALE",
+                owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000002" }]
+            }, connections['admin'])      
+        }).then(() => {
+	 return invokeStatusUpdateTransaction('org.hmlr.model', 'PropertyCheckCompleted', {propertyId: randomNumberBetween0and10000}, connections['admin'])
+       })	
+	.then(() => {
+            return createAsset('org.hmlr.model', 'Mortgage', randomNumberBetween0and10000, {
+                lender: { "namespace": "org.hmlr.model", "type": "Lender", "id": "hsbc" }
+            }, connections['admin'])
+        })
+	.then(() => {
+	 return invokeStatusUpdateTransaction('org.hmlr.model', 'MortgageApproved', {mortgageId: randomNumberBetween0and10000}, connections['admin'])
+       })
+	.then(() => {
+            logger.debug('Connections: ' + JSON.stringify(Object.keys(connections)));
+           // res.sendStatus(200);
+	    res.send(randomNumberBetween0and10000);
+        });
+    });
+
+//==================================================================
+//
+// UPDATE PROPERTY EXCHANGE STATUS
+//
+//==================================================================
+app.post("/api/propertyExchange/updateStatus", (req, res) => {
+    return invokeStatusUpdateTransaction('org.hmlr.model', 'UpdatePropertyExchangeStatus', {propertyExchangeId: req.body.propertyExchangeId,propertyExchangeStatus:req.body.propertyExchangeStatus}, connections[req.body.user]).then(() => {
+        res.status(200).send("SUCCESS");
+
+    }).catch((error) => {
+        logger.error(error.message);
+        res.status(400).send("ERROR " + error.message);
+    });
+});
+
+//this method created to modify all the status for property exchange
+function invokeStatusUpdateTransaction(namespace, type, attributes, bnc) {
+    logger.debug('issueTransaction() called with ' + namespace + ' ' + type + ' ' + JSON.stringify(attributes));
+    return new Promise((resolve, reject) => {
+
+        // Make the transaction
+        let newTransaction;
+        try {
+            newTransaction = factory.newTransaction(namespace, type);
+        } catch (error) {
+            logger.error(error.message);
+            reject(error);
+        }
+
+	   Object.keys(attributes).forEach((key) => {
+            if(Array.isArray(attributes[key])) {
+                if(attributes[key].length && typeof(attributes[key]) === 'object') {
+                    newTransaction[key] = [];
+                    attributes[key].forEach((element) => {
+                        let relationship = factory.newRelationship(element.namespace, element.type, element.id);
+                        newTransaction[key].push(relationship);
+                    });
+                } else {
+                    newTransaction[key] = attributes[key];
+                }
+                logger.debug('Adding array to ' + key);
+
+            } else if(typeof(attributes[key]) === 'object') {
+                let relationship = factory.newRelationship(attributes[key].namespace, attributes[key].type, attributes[key].id);
+                newTransaction[key] = relationship;
+                logger.debug('Adding attribute ' + key + ' with relationship to ' + attributes[key].namespace + '.' + attributes[key].type + '#' + attributes[key].id + ' to new ' + type);
+
+            } else if(typeof(attributes[key]) === 'string' && attributes[key].search(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/i) === 0) {
+                newTransaction[key] = new Date(attributes[key]);
+                logger.debug('Adding attribute ' + key + ' with date value ' + attributes[key] + ' to new ' + type);
+
+            }
+	    else {
+		 logger.debug('attributes[key] for new transaction ' +attributes[key]);
+	         newTransaction[key] = attributes[key];
+		 logger.debug('Adding attribute ' + key + ' with value ' + attributes[key] + ' to new ' + type);    
+            }
+        });
+
+        // Submit the transaction
+        logger.debug('Submitting new ' + type + ' transaction');
+        return bnc.submitTransaction(newTransaction).then(() => {
+            logger.debug('Successfully issued ' + type + ' with ' + JSON.stringify(attributes));
+            resolve();
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+    });
+}
+
+//-------------------------------------------------------
+//getting the address of the Property Asset
+
+app.post("/api/get/assetAddress", (req, res) => {
+    respondWithAssetAddress(res, req.body);
+});
+
+function respondWithAssetAddress(res, body) {
+    logger.debug('respondWithAssetAddress() called with ' + JSON.stringify(body));
+    getAssetAddress('org.hmlr.model', body.type, body.id, connections[body.user]).then((asset) => {
+        res.status(200).send(asset);
+    }).catch((error) => {
+        res.status(200).send("ERROR " + error.message);
+    });
+}
+
+function getAssetAddress(namespace, type, id, bnc) {
+    logger.debug('getAsset() called for ' + namespace + '.' + type + '#' + id);
+    return new Promise((resolve, reject) => {
+        return bnc.getAssetRegistry(namespace + '.' + type).then((reg) => {
+            return reg.resolve(id).then((asset) => {
+		    logger.debug("address is ::"+asset.address);
+                resolve(asset.address);
+            });
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+    });
+}
+
+
+
+//getting the owner of the Property Asset
+
+app.post("/api/get/assetOwner", (req, res) => {
+    respondWithAssetOwner(res, req.body);
+});
+
+function respondWithAssetOwner(res, body) {
+    logger.debug('respondWithAssetOwner() called with ' + JSON.stringify(body));
+    getAssetOwner('org.hmlr.model', body.type, body.id, connections[body.user]).then((asset) => {
+        res.status(200).send(asset);
+    }).catch((error) => {
+        res.status(200).send("ERROR " + error.message);
+    });
+}
+
+function getAssetOwner(namespace, type, id, bnc) {
+    logger.debug('getAssetOwner() called for ' + namespace + '.' + type + '#' + id);
+    return new Promise((resolve, reject) => {
+        return bnc.getAssetRegistry(namespace + '.' + type).then((reg) => {
+            return reg.resolve(id).then((asset) => {
+		    logger.debug("owner is ::"+asset.owners);
+		    var user = "admin";
+		    if(asset.owners.lenght == 2)
+		    {
+			    getParticipant('org.hmlr.model', "Seller", "100000008", connections[user]).then((asset) => {
+				resolve(asset.saleParticipantFirstName);
+			    }).catch((error) => {
+                                  reject(error);
+		       });
+	           }
+		   else{
+			var id = ''+asset.owners[0].saleParticipantId;
+			 logger.debug("Buyer id::"+id);
+			/*var idAfterSplit = id.split("#");
+			 logger.debug("Buyer id after Split::"+idAfterSplit[1]);*/
+			 if(id == "100000002" )
+			 {
+			    getParticipant('org.hmlr.model', "Seller", "100000002", connections[user]).then((asset) => {
+				resolve(asset.saleParticipantFirstName);
+			        }).catch((error) => {
+                                  reject(error);
+		             });
+		       }
+		       else{
+			        getParticipant('org.hmlr.model', "Buyer", "100000008", connections[user]).then((asset) => {
+				resolve(asset.saleParticipantFirstName);
+			        }).catch((error) => {
+                                  reject(error);
+		             });
+		       }
+		}
+            });
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+    });
+}
+
+
+
+// getting the Property Exchange Asset Status
+
+app.post("/api/get/assetStatus", (req, res) => {
+    respondWithAssetStatus(res, req.body);
+});
+
+function respondWithAssetStatus(res, body) {
+    logger.debug('respondWithAssetStatus() called with ' + JSON.stringify(body));
+    getAssetStatus('org.hmlr.model', body.type, body.id, connections[body.user]).then((asset) => {
+        res.status(200).send(asset);
+    }).catch((error) => {
+        res.status(200).send("ERROR " + error.message);
+    });
+}
+
+function getAssetStatus(namespace, type, id, bnc) {
+    logger.debug('getAssetStatus() called for ' + namespace + '.' + type + '#' + id);
+    return new Promise((resolve, reject) => {
+        return bnc.getAssetRegistry(namespace + '.' + type).then((reg) => {
+            return reg.resolve(id).then((asset) => {
+		    logger.debug("status is ::"+asset.status);
+                resolve(asset.status);
+            });
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+    });
+}
+
+
+
+//-------------------------------------------------------------
+
+
+//==================================================================
+//
+//  GET ALL TRNASACTION DETAILS FROM QUERY
+//
+//==================================================================
+
+app.get("/api/selectAllTransactions", (req, res) => {
+    respondWithQuery1(res);
+});
+
+function respondWithQuery1(res) {
+    //logger.debug('respondWithQuery1() called with ' + JSON.stringify(body));
+    var user = "admin";
+    getQuery1('org.hmlr.model',connections[user]).then((asset) => {
+        res.status(200).send(asset);
+    }).catch((error) => {
+        res.status(500).send("ERROR " + error.message);
+    });
+}
+
+function getQuery1(namespace, bnc) {
+    logger.debug('getQuery1() called for ' + namespace + '.' + bnc);
+    return new Promise((resolve, reject) => {
+	var query = bnc.buildQuery('SELECT org.hyperledger.composer.system.HistorianRecord');    
+	return bnc.query(query)
+	.then((asset) => {
+                resolve(asset);
+            });
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+}
+
+
+
+function respondWithQueryData(res, body) {
+    logger.debug('respondWithQueryData() called ');
+    var user = "admin";
+    
+    getQuery('/queries','/selectAllTransactions', connections[user]).then((asset) => {
+        res.status(200).send(asset);
+    }).catch((error) => {
+        res.status(200).send("ERROR " + error.message);
+    });
+}
+
+function getQuery(namespace, type, bnc) {
+    logger.debug('getQuery() called for ' + namespace + type+' '+bnc);
+    logger.debug('all registry'+bnc.getAllRegistries);
+    return new Promise((resolve, reject) => {
+        return bnc.submitQuery(namespace + type).then((reg) => {
+            return reg.resolve().then((asset) => {
+                resolve(asset);
+            });
+        }).catch((error) => {
+            logger.error(error.message);
+            reject(error);
+        });
+    });
+}
+
+

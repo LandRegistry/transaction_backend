@@ -36,3 +36,11 @@ npm install && node app.js
 (Setting NODE_ENV ensures the stage.json overrides the connection profile name to be the one that is running on bluemix)
 
 This will run the custom API locally, connecting to the Fabric SDK on Bluemix. Note that you will need to have downloaded the connection profile into ~/.composer-connection-profiles beforehand.
+
+Updated the below content in the file after enhancement
+------------------------------------------------------------------
+Before running the application need to run the prepopulated data in the application to make it run . For this run the below command in postman
+POST call :   http://localhost:6001/api/populate
+
+NOTE:: As this code is written is composer version 0.13.1, so while installing the composer we have to stick to the version @0.13.1 . Else some of the functionality might not work as expected.
+

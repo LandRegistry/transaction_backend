@@ -1,4 +1,5 @@
-curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
+#curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
+cat install-hlfv1.sh | bash
 cd ..
 composer archive create -a hmlr-network.bna -t dir -n ./hmlr-network
 sleep 20
