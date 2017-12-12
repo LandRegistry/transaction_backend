@@ -10,8 +10,12 @@ pkill -f composer-rest-server
 
 export NODE_ENV=development # Ensure only config/default.json is loaded
 npm prune && npm install
-node app.js &
+
+echo Starting Composer REST server...
 composer-rest-server -p hlfv1 -n org-acme-biznet -i PeerAdmin -s adm1npw -N always -w true &
+
+echo Starting node API...
+node app.js &
 
 #Auto call populate
 #curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ }' 'http://localhost:3500/api/populate'
