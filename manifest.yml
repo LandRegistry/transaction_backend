@@ -16,17 +16,17 @@ applications:
                 "type": "hlfv1",
                 "orderers": [
                     {
-                      "url": "grpc://169.51.15.13:31010"
+                      "url": "grpc://169.51.23.118:31010"
                     }
                 ],
                 "ca": {
-                    "url": "http://169.51.15.13:30000",
+                    "url": "http://169.51.23.118:30000",
                     "name": "CA1"
                 },
                 "peers": [
                     {
-                        "requestURL": "grpc://169.51.15.13:30110",
-                        "eventURL": "grpc://169.51.15.13:30111"
+                        "requestURL": "grpc://169.51.23.118:30110",
+                        "eventURL": "grpc://169.51.23.118:30111"
                     }
                 ],
                 "keyValStore": "/not/used/wallet/is/instead",

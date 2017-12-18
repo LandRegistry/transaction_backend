@@ -245,7 +245,7 @@ function confirmEscrowPayoutReceipt(args) {
 function updatePropertyExchange(args) {
     return getAssetRegistry('org.hmlr.model.PropertyExchange').then(function(propReg) {
         return propReg.get(args.propertyExchangeId).then(function(propertyExchange) {
-            if(propertyExchange["status"] === "COMPLETED") {
+            if(propertyExchange["status"] === "BUYER_MOVES_IN") {
                 propertyExchange["landRegUpdated"] = true;
                 return propReg.update(propertyExchange).then(function() {
                     return getAssetRegistry('org.hmlr.model.Contract').then(function(contractReg){
@@ -298,6 +298,51 @@ function updatePropertyExchange(args) {
             //     throw new Error("Contract must be in DRAFTED state to be editable");
             //     return;
             // }
+        });
+    });
+}
+
+/**
+  * be called by Buyer Representative - "when the property check completed"
+  * @param {org.hmlr.model.PropertyCheckCompleted} args - the propertycheckcomplete transaction
+  * @transaction
+  */
+  function propertyCheckCompleted(args) {
+    return getAssetRegistry('org.hmlr.model.Property').then(function(reg) {
+        return reg.get(args.propertyId).then(function(property) {
+            property["status"] = "PROPERTY_CHECK_COMPLETED";
+            return reg.update(property);
+
+        });
+    });
+}
+
+/**
+  * be called by Buyer Representative - "when the property check completed"
+  * @param {org.hmlr.model.MortgageApproved} args - the mortgageApproved transaction
+  * @transaction
+  */
+  function mortgageApproved(args) {
+    return getAssetRegistry('org.hmlr.model.Mortgage').then(function(reg) {
+        return reg.get(args.mortgageId).then(function(mortgage) {
+            mortgage["status"] = "MORTGAGE_APPROVED";
+            return reg.update(mortgage);
+
+        });
+    });
+}
+
+/**
+  * be called by Buyer Representative - "when the property exchange check completed"
+  * @param {org.hmlr.model.UpdatePropertyExchangeStatus} args - the updatePropertyExchangeStatus transaction
+  * @transaction
+  */
+  function updatePropertyExchangeStatus(args) {
+    return getAssetRegistry('org.hmlr.model.PropertyExchange').then(function(reg) {
+        return reg.get(args.propertyExchangeId).then(function(propertyExchange) {
+            propertyExchange["status"] = args.propertyExchangeStatus;
+            return reg.update(propertyExchange);
+
         });
     });
 }

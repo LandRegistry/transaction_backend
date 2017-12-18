@@ -16,23 +16,30 @@ enum ContractStatus {
 
 enum PropertyExchangeStatus {
   o PRE_EXCHANGE
-  o EXCHANGED
+  //o EXCHANGED
   o COMPLETED
+  o CONTRACT_CREATED
+  o CONTRACT_SIGNED
+  o PAYMENT_COMPLETED
+  o BUYER_MOVES_IN
+  o REGISTRY_UPDATED
 }
 
 enum PropertyStatus {
   o OWNED
   o UP_FOR_SALE
   o IN_PROCESS_OF_EXCHANGE
+  o PROPERTY_CHECK_COMPLETED
 }
 
-// enum MortgageStatus {
+ enum MortgageStatus {
+     o MORTGAGE_APPROVED
 //   o APPLICATION_SUBMITTED
 //   o APPROVED
 //   o REJECTED
 //   o ACTIVE
 //   o SETTLEDSETTLED
-// }
+ }
 
 /**
  * Partcipants
@@ -161,6 +168,12 @@ asset EscrowShadowAccount identified by escrowShadowAccountId {
   --> Escrow owner
 }
 
+  asset Mortgage identified by mortgageId {
+  o String mortgageId
+  --> Lender lender
+  o MortgageStatus status optional
+}
+  
 /**
  * Transactions
 */
@@ -215,4 +228,17 @@ transaction ConfirmEscrowPayoutReceipt extends ConfirmPayment {
 
 transaction LockProperty {
   o String propertyId
+}
+
+transaction UpdatePropertyExchangeStatus {
+  o String propertyExchangeId
+  o String propertyExchangeStatus
+}
+  
+transaction PropertyCheckCompleted {
+  o String propertyId
+}
+  
+transaction MortgageApproved {
+  o String mortgageId
 }
