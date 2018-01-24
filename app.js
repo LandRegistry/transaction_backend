@@ -884,7 +884,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '79861', {
-                "address": "10 Digital Street, England, (HM1 2LR)",
+                "address": "2 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000003" },
@@ -893,7 +893,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '83921', {
-                "address": "1 Digital Street, England (HM1 2LR)",
+                "address": "3 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000005" },
@@ -902,7 +902,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '78537', {
-                "address": "17 Digital Street, England (HM1 2LR)",
+                "address": "4 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000007" }]
