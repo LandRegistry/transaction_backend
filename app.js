@@ -746,7 +746,7 @@ function createExistingIdentities() {
 
 //         }).then(() => {
 //             return createAsset('org.hmlr.model', 'Property', 'p3', {
-//                 "address": "10 Cotham Lawn Road, Cotham, (BS6 6DU)",
+//                 "address": "10 Digital Street, England, (HM1 2LR)",
 //                 "propertyValueInGBP": 500000,
 //                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "b3" },
 //                 { "namespace": "org.hmlr.model", "type": "Seller", "id": "s3" }]
@@ -875,7 +875,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '79984', {
-                "address": "21 Cotham Lawn Road, Bristol (BS6 6DU)",
+                "address": "1 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 180000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000001" },
@@ -884,7 +884,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '79861', {
-                "address": "10 Cotham Lawn Road, Cotham, (BS6 6DU)",
+                "address": "10 Digital Street, England, (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000003" },
@@ -893,7 +893,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '83921', {
-                "address": "21 Cotham Lawn Road, Cotham, Bristol (BS6 6DS)",
+                "address": "1 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000005" },
@@ -902,7 +902,7 @@ app.post('/api/populate', (req, res) => {
         }).then(() => {
 
             return createAsset('org.hmlr.model', 'Property', '78537', {
-                "address": "17 Cotham Lawn Road, Bristol (BS6 6DU)",
+                "address": "17 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 500000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000007" }]
@@ -975,7 +975,7 @@ app.post('/api/resetdemo', (req, res) => {
     Promise.resolve().then(() => {
 	   
             return createAsset('org.hmlr.model', 'Property', randomNumberBetween0and10000, {
-                "address": "21 Cotham Lawn Road, Bristol (BS6 6DU)",
+                "address": "1 Digital Street, England (HM1 2LR)",
                 "propertyValueInGBP": 180000,
                 "status": "UP_FOR_SALE",
                 owners: [{ "namespace": "org.hmlr.model", "type": "Seller", "id": "100000002" }]
